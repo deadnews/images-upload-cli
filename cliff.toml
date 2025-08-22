@@ -1,86 +1,97 @@
 # git-cliff ~ configuration file
 # https://git-cliff.org/docs/configuration
 
+[git]
+conventional_commits     = true            # Parse commits based on https://www.conventionalcommits.org
+filter_unconventional    = true            # If true, exclude non-conventional commits
+split_commits            = false           # If true, treat each commit line as a separate entry
+filter_commits           = false           # If true, exclude commits not matched by `commit_parsers`
+protect_breaking_commits = true            # Keep breaking-change commits from being skipped
+sort_commits             = "newest"        # Order inside sections: oldest/newest
+tag_pattern              = "v[0-9].*"      # Regex used to detect release tags
+ignore_tags              = "rc|beta|alpha" # Regex of tags to ignore; their commits attach to the next tag
+skip_tags                = ""              # Regex of tags to skip from processing
+topo_order               = false           # If true, process tags in topological order
+
+commit_preprocessors = [
+  { pattern = '\((\w+\s)?[!#]([0-9]+)\)', replace = "([#${2}](<REPO>/issues/${2}))" }, # Replace merge request numbers
+  { pattern = "  +", replace = " " },                                                  # Remove multiple whitespaces
+]
+
+commit_parsers = [
+  { message = "^(ci|build|chore)\\(deps.*\\)", skip = true },
+  { message = "^chore\\(release\\)", skip = true },
+  { message = "^fix\\(deps.*\\): update dependency ([^\\s]+)", scope = "${1}", group = "<!-- 8 -->Dependencies" },
+  { message = "^fix\\(deps.*\\)", group = "<!-- 8 -->Dependencies" },
+  { message = "^feat", group = "<!-- 0 -->Features" },
+  { message = "^fix", group = "<!-- 1 -->Bug fixes" },
+  { message = "^refactor", group = "<!-- 2 -->Refactor" },
+  { message = "^doc", group = "<!-- 3 -->Documentation" },
+  { message = "^perf", group = "<!-- 32 -->Performance" },
+  { message = "^build", group = "<!-- 4 -->Build" },
+  { body = ".*security", group = "<!-- 5 -->Security" },
+  { message = "^test", group = "<!-- 6 -->Testing" },
+  { message = "^style", group = "<!-- 62 -->Styling" },
+  { message = "^(ci|chore)", group = "<!-- 7 -->Chores" },
+  { message = "^revert", group = "<!-- 9 -->Revert" },
+]
+
 [changelog]
-header = """
-# Changelog\n
-"""
 postprocessors = [
   { pattern = '<REPO>', replace = "https://github.com/deadnews/images-upload-cli" },
 ]
+header = """
+# Changelog\n
+"""
 body = """
-{%- macro remote_url() -%}
-  https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
+{%- macro print_commit(commit) -%}
+    - {% if commit.scope %}_({{ commit.scope }})_ {% endif %}{% if commit.breaking %}[**breaking**] {% endif %}\
+    {{ commit.message }} - ([{{ commit.id | truncate(length=7, end="") }}](<REPO>/commit/{{ commit.id }}))
 {%- endmacro -%}
 
-{% macro print_commit(commit) -%}
-    - {% if commit.scope %}_({{ commit.scope }})_ {% endif %}\
-        {% if commit.breaking %}[**breaking**] {% endif %}\
-        {{ commit.message }} - \
-        ([{{ commit.id | truncate(length=7, end="") }}]({{ self::remote_url() }}/commit/{{ commit.id }}))\
-{% endmacro -%}
+{%- macro print_deps_commit(commit) -%}
+    - {{ commit.message }} - ([{{ commit.id | truncate(length=7, end="") }}](<REPO>/commit/{{ commit.id }}))
+{%- endmacro -%}
 
-{% if version %}\
-    {% if previous.version %}\
+{%- if version -%}
+    {%- if previous.version -%}
         ## [{{ version | trim_start_matches(pat="v") }}]\
-          ({{ self::remote_url() }}/compare/{{ previous.version }}...{{ version }}) - {{ timestamp | date(format="%Y-%m-%d") }}
-    {% else %}\
+        (<REPO>/compare/{{ previous.version }}...{{ version }}) - {{ timestamp | date(format="%Y-%m-%d") }}
+    {%- else -%}
         ## [{{ version | trim_start_matches(pat="v") }}]\
-          ({{ self::remote_url() }}/commits/{{ version }}) - {{ timestamp | date(format="%Y-%m-%d") }}
-    {% endif %}\
-{% else %}\
+        (<REPO>/commits/{{ version }}) - {{ timestamp | date(format="%Y-%m-%d") }}}
+    {%- endif -%}
+{%- else -%}
     ## [unreleased]
-{% endif %}\
+{%- endif %}
 
-{% for group, commits in commits | group_by(attribute="group") %}
+{%- for group, commits in commits | group_by(attribute="group") %}
+
     ### {{ group | striptags | trim | upper_first }}
-    {% for commit in commits
-    | filter(attribute="scope")
-    | sort(attribute="scope") %}
-        {{ self::print_commit(commit=commit) }}
-    {%- endfor -%}
-    {% raw %}\n{% endraw %}\
-    {%- for commit in commits %}
-        {%- if not commit.scope -%}
+    {% if group | striptags | trim | lower == "dependencies" -%}
+        {%- for scope, scoped_commits in commits | filter(attribute="scope") | group_by(attribute="scope") %}
+            {{ self::print_deps_commit(commit=scoped_commits | first) }}
+        {%- endfor -%}
+        {%- for commit in commits -%}
+            {%- if not commit.scope %}
+                {{ self::print_deps_commit(commit=commit) }}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- else -%}
+        {%- for commit in commits | filter(attribute="scope") | sort(attribute="scope") %}
             {{ self::print_commit(commit=commit) }}
-        {% endif -%}
-    {% endfor -%}
-{% endfor %}\n
+        {%- endfor -%}
+        {%- for commit in commits -%}
+            {%- if not commit.scope %}
+                {{ self::print_commit(commit=commit) }}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- endif -%}
+{%- endfor -%}
+{% raw %}\n
+{% endraw %}
 """
 footer = """
 <!-- generated by git-cliff -->
 """
 trim = true
-
-[git]
-conventional_commits = true # parse the commits based on https://www.conventionalcommits.org
-filter_unconventional = true # filter out the commits that are not conventional
-split_commits = false # process each line of a commit as an individual commit
-commit_preprocessors = [
-  { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "([#${2}](<REPO>/issues/${2}))" }, # Replace issue numbers
-  { pattern = "  +", replace = " " },                                               # Remove multiple whitespaces
-]
-commit_parsers = [
-  { message = "^(ci|build|chore)\\(deps.*\\)", skip = true },
-  { message = "^chore\\(release\\)", skip = true },
-  { message = "^fix\\(deps.*\\)", group = "<!-- 92 -->⬆️ Dependencies" },
-  { message = "^feat", group = "<!-- 0 -->🚀 Features" },
-  { message = "^fix", group = "<!-- 1 -->🐛 Bug fixes" },
-  { message = "^refactor", group = "<!-- 2 -->🚜 Refactor" },
-  { message = "^doc", group = "<!-- 3 -->📚 Documentation" },
-  { message = "^perf", group = "<!-- 4 -->⚡ Performance" },
-  { message = "^style", group = "<!-- 5 -->🎨 Styling" },
-  { message = "^test", group = "<!-- 6 -->🧪 Testing" },
-  { message = "^chore", group = "<!-- 7 -->🧹 Chores" },
-  { body = ".*security", group = "<!-- 8 -->🛡️ Security" },
-  { message = "^build", group = "<!-- 9 -->👷 Build" },
-  { message = "^ci", group = "<!-- 91 -->⚙️ CI/CD" },
-  { message = "^revert", group = "<!-- 93 -->◀️ Revert" },
-]
-protect_breaking_commits = true
-filter_commits = false # filter out the commits that are not matched by commit parsers
-tag_pattern = "v[0-9].*" # regex for matching git tags
-skip_tags = "" # drop commits from the changelog
-ignore_tags = "rc|beta|alpha" # include ignored commits into the next tag
-topo_order = false # sort the tags topologically
-sort_commits = "newest" # sort the commits inside sections by oldest/newest order
