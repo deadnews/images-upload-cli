@@ -1,0 +1,5 @@
+rules:
+  artipacked:
+    disable: true
+  cache-poisoning:
+    disable: true

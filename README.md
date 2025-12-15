@@ -17,7 +17,7 @@
 PyPI
 
 ```sh
-pipx install images-upload-cli
+uv tool install images-upload-cli
 # or
 pip install images-upload-cli
 ```

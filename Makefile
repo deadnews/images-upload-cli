@@ -3,16 +3,17 @@
 default: check
 
 install:
-	pre-commit install
+	prek install
 	uv sync
 lock:
 	uv lock
 update:
 	uv sync --upgrade
+	prek auto-update
 
 check: pc lint test
 pc:
-	pre-commit run -a
+	prek run -a
 lint:
 	uv run ruff check .
 	uv run ruff format .
@@ -39,7 +40,7 @@ bumped:
 # make release TAG=$(git cliff --bumped-version)-alpha.0
 release: check
 	git cliff -o CHANGELOG.md --tag $(TAG)
-	pre-commit run --files CHANGELOG.md || pre-commit run --files CHANGELOG.md
+	prek run --files CHANGELOG.md || prek run --files CHANGELOG.md
 	git add CHANGELOG.md
 	git commit -m "chore(release): prepare for $(TAG)"
 	git push
