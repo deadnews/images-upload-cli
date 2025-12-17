@@ -17,8 +17,7 @@ pc:
 lint:
 	uv run ruff check .
 	uv run ruff format .
-	uv run mypy .
-	uv run pyright .
+	uv run ty check .
 test:
 	uv run pytest -m 'not online'
 

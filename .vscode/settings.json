@@ -7,5 +7,6 @@
       "source.organizeImports": "explicit"
     }
   },
+  "python.languageServer": "None",
   "python.testing.pytestEnabled": true
 }
