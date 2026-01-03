@@ -24,7 +24,7 @@ repos:
       - id: prettier
 
   - repo: https://github.com/crate-ci/typos
-    rev: v1.40.0
+    rev: v1.41.0
     hooks:
       - id: typos
 
@@ -35,12 +35,12 @@ repos:
       - id: check-renovate
 
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.9
+    rev: v1.7.10
     hooks:
       - id: actionlint
 
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: v1.18.0
+    rev: v1.19.0
     hooks:
       - id: zizmor
         args: [--fix=safe]
@@ -51,7 +51,7 @@ repos:
       - id: taplo-format
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.9
+    rev: v0.14.10
     hooks:
       - id: ruff-format
       - id: ruff-check
