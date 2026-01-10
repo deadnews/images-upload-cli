@@ -1,11 +1,12 @@
 {
   "[python]": {
-    "editor.defaultFormatter": "charliermarsh.ruff",
-    "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
       "source.fixAll": "explicit",
       "source.organizeImports": "explicit"
-    }
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.inlayHints.enabled": "offUnlessPressed" // toggled with Ctrl+Alt
   },
   "python.languageServer": "None",
   "python.testing.pytestEnabled": true

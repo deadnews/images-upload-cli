@@ -1,15 +1,6 @@
-.PHONY: all clean default install lock update check pc test docs run
+.PHONY: all clean default install lock update up check pc test docs run
 
 default: check
-
-install:
-	prek install
-	uv sync
-lock:
-	uv lock
-update:
-	uv sync --upgrade
-	prek auto-update
 
 check: pc lint test
 pc:
@@ -20,6 +11,16 @@ lint:
 	uv run ty check .
 test:
 	uv run pytest -m 'not online'
+
+install:
+	uv sync
+
+update: up up-ci
+up:
+	uv sync --upgrade
+up-ci:
+	prek auto-update
+	pinact run -update
 
 doc:
 	uv run mkdocs serve
