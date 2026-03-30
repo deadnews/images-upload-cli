@@ -1,13 +1,4 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", "github>deadnews/renovate-config"],
-  "packageRules": [
-    {
-      "addLabels": ["main"],
-      "description": "Group httpx and pytest-httpx in one PR",
-      "groupName": "httpx and pytest-httpx",
-      "matchManagers": ["pep621"],
-      "matchPackageNames": ["httpx", "pytest-httpx"]
-    }
-  ]
+  "extends": ["config:recommended", "github>deadnews/renovate-config"]
 }

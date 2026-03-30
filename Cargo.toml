@@ -1,0 +1,55 @@
+[package]
+name        = "images-upload-rust"
+description = "Upload images via APIs"
+version     = "0.0.0"
+edition     = "2024"
+license     = "MIT"
+repository  = "https://github.com/deadnews/images-upload-rust"
+keywords    = ["image", "upload", "cli"]
+
+[[bin]]
+name = "imgup"
+path = "src/main.rs"
+
+[dependencies]
+# CLI & config
+clap    = { version = "4.6", features = ["derive"] }
+dirs    = { version = "6.0" }
+dotenvy = { version = "0.15" }
+
+# Async & HTTP
+futures = { version = "0.3", default-features = false, features = ["alloc"] }
+reqwest = { version = "0.13", default-features = false, features = ["rustls", "multipart"] }
+tokio   = { version = "1.50", features = ["fs", "macros", "rt-multi-thread"] }
+
+# Serialization
+serde      = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+
+# Image processing
+fontdue = { version = "0.9" }
+image   = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp", "bmp", "tiff"] }
+
+# System integration
+arboard     = { version = "3.6", default-features = false }
+notify-rust = { version = "4.12" }
+
+# Error handling & logging
+anyhow             = { version = "1.0" }
+tracing            = { version = "0.1" }
+tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt", "ansi", "std"] }
+
+[dev-dependencies]
+wiremock = { version = "0.6" }
+
+[profile.release]
+codegen-units = 1
+lto           = true
+strip         = true
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+pedantic    = { level = "warn", priority = -1 }
+unwrap_used = "warn"

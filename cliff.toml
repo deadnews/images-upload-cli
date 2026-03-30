@@ -3,19 +3,21 @@
 
 [git]
 conventional_commits     = true            # Parse commits based on https://www.conventionalcommits.org
-filter_unconventional    = true            # If true, exclude non-conventional commits
-split_commits            = false           # If true, treat each commit line as a separate entry
-filter_commits           = false           # If true, exclude commits not matched by `commit_parsers`
+filter_unconventional    = true            # Exclude non-conventional commits
+split_commits            = false           # Treat each line in a commit as a separate entry
+filter_commits           = false           # Only include commits matched by `commit_parsers`
 protect_breaking_commits = true            # Keep breaking-change commits from being skipped
-sort_commits             = "newest"        # Order inside sections: oldest/newest
-tag_pattern              = "v[0-9].*"      # Regex used to detect release tags
-ignore_tags              = "rc|beta|alpha" # Regex of tags to ignore; their commits attach to the next tag
-skip_tags                = ""              # Regex of tags to skip from processing
-topo_order               = false           # If true, process tags in topological order
+sort_commits             = "newest"        # Order inside sections
+tag_pattern              = "v[0-9].*"
+ignore_tags              = "rc|beta|alpha" # Ignored tags' commits roll into the next release
+skip_tags                = ""
+topo_order               = false
 
 commit_preprocessors = [
-  { pattern = '\((\w+\s)?[!#]([0-9]+)\)', replace = "([#${2}](<REPO>/issues/${2}))" }, # Replace merge request numbers
-  { pattern = "  +", replace = " " },                                                  # Remove multiple whitespaces
+  # Link merge request numbers
+  { pattern = '\((\w+\s)?[!#]([0-9]+)\)', replace = "([#${2}](<REPO>/issues/${2}))" },
+  # Collapse repeated spaces
+  { pattern = "  +", replace = " " },
 ]
 
 commit_parsers = [
@@ -37,9 +39,7 @@ commit_parsers = [
 ]
 
 [changelog]
-postprocessors = [
-  { pattern = '<REPO>', replace = "https://github.com/deadnews/images-upload-cli" },
-]
+postprocessors = [{ pattern = '<REPO>', replace = "https://github.com/deadnews/images-upload-cli" }]
 header = """
 # Changelog\n
 """
@@ -59,7 +59,7 @@ body = """
         (<REPO>/compare/{{ previous.version }}...{{ version }}) - {{ timestamp | date(format="%Y-%m-%d") }}
     {%- else -%}
         ## [{{ version | trim_start_matches(pat="v") }}]\
-        (<REPO>/commits/{{ version }}) - {{ timestamp | date(format="%Y-%m-%d") }}}
+        (<REPO>/commits/{{ version }}) - {{ timestamp | date(format="%Y-%m-%d") }}
     {%- endif -%}
 {%- else -%}
     ## [unreleased]

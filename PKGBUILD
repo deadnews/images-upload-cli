@@ -1,33 +1,23 @@
 # Maintainer: deadnews <deadnewsgit@gmail.com>
 
-pkgbase="python-images-upload-cli"
-pkgname=("python-images-upload-cli")
-_name="images_upload_cli"
-pkgver="dynamically updated by ci/cd"
+_pkgname="pindock"
+pkgname="${_pkgname}-bin"
+pkgver="0.0.0"
 pkgrel=1
-pkgdesc="Upload images via APIs"
-url="https://github.com/deadnews/images-upload-cli"
-depends=(
-    "python"
-    "python-click"
-    "python-dotenv"
-    "python-httpx"
-    "python-loguru"
-    "python-pillow"
-    "python-pyperclip"
-    "python-rich"
-)
-makedepends=(
-    "python-installer"
-)
-optdepends=(
-    "libnotify: sending desktop notifications"
-)
+pkgdesc="Pin and update Docker image digests in Dockerfiles and compose files"
+arch=("x86_64" "aarch64")
+url="https://github.com/deadnews/pindock"
 license=("MIT")
-arch=("any")
-source=("https://files.pythonhosted.org/packages/py3/${_name::1}/${_name}/${_name}-$pkgver-py3-none-any.whl")
-sha256sums=("dynamically updated by ci/cd")
+provides=("pindock")
+conflicts=("pindock")
+options=("!strip")
+
+source_x86_64=("${_pkgname}_${pkgver//_/-}_linux_amd64.tar.gz::${url}/releases/download/v${pkgver//_/-}/${_pkgname}_${pkgver//_/-}_linux_amd64.tar.gz")
+source_aarch64=("${_pkgname}_${pkgver//_/-}_linux_arm64.tar.gz::${url}/releases/download/v${pkgver//_/-}/${_pkgname}_${pkgver//_/-}_linux_arm64.tar.gz")
+
+sha256sums_x86_64=("SKIP")
+sha256sums_aarch64=("SKIP")
 
 package() {
-    python -m installer --destdir="${pkgdir}" "${_name}-$pkgver-py3-none-any.whl"
+    install -Dm755 "${srcdir}/${_pkgname}" "${pkgdir}/usr/bin/${_pkgname}"
 }
