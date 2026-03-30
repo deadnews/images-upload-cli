@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.0.0-alpha.3](https://github.com/deadnews/images-upload-cli/compare/v3.0.6...v4.0.0-alpha.3) - 2026-03-30
+## [4.0.0-alpha.4](https://github.com/deadnews/images-upload-cli/compare/v3.0.6...v4.0.0-alpha.4) - 2026-03-30
 
 ### Features
 

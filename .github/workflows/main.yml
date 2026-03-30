@@ -99,8 +99,8 @@ jobs:
           - { os: ubuntu-latest, target: aarch64, manylinux: 2_28 }
           - { os: ubuntu-latest, target: x86_64, manylinux: musllinux_1_2 }
           - { os: ubuntu-latest, target: aarch64, manylinux: musllinux_1_2 }
-          - { os: macos-latest, target: aarch64, manylinux: "" }
-          - { os: windows-latest, target: x86_64, manylinux: "" }
+          - { os: macos-latest, target: aarch64 }
+          - { os: windows-latest, target: x86_64 }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -109,18 +109,18 @@ jobs:
         shell: bash
         run: sed "s|^version.*|version = '${GITHUB_REF_NAME#v}'|" Cargo.toml > t && mv t Cargo.toml
 
-      - uses: pyo3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
+      - name: Build wheel
+        uses: pyo3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
         with:
           command: build
           args: --release --compatibility pypi
           target: ${{ matrix.target }}
-          manylinux: ${{ matrix.manylinux }}
+          manylinux: ${{ matrix.manylinux || '' }}
 
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: wheel-${{ matrix.os }}-${{ matrix.target }}
+          name: wheel-${{ matrix.os }}-${{ matrix.target }}-${{ matrix.manylinux || 'native' }}
           path: target/wheels/
-          retention-days: 1
 
   pypi-deploy:
     name: Release to PyPI
@@ -175,13 +175,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: ubuntu-latest, target: aarch64-unknown-linux-gnu }
-          - { os: ubuntu-latest, target: aarch64-unknown-linux-musl }
           - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu }
           - { os: ubuntu-latest, target: x86_64-unknown-linux-musl }
+          - { os: ubuntu-latest, target: aarch64-unknown-linux-gnu }
+          - { os: ubuntu-latest, target: aarch64-unknown-linux-musl }
           - { os: macos-latest, target: aarch64-apple-darwin }
-          - { os: windows-latest, target: aarch64-pc-windows-msvc }
           - { os: windows-latest, target: x86_64-pc-windows-msvc }
+          - { os: windows-latest, target: aarch64-pc-windows-msvc }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
