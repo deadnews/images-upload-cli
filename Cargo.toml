@@ -1,10 +1,10 @@
 [package]
-name        = "images-upload-rust"
+name        = "images-upload-cli"
 description = "Upload images via APIs"
 version     = "0.0.0"
 edition     = "2024"
 license     = "MIT"
-repository  = "https://github.com/deadnews/images-upload-rust"
+repository  = "https://github.com/deadnews/images-upload-cli"
 keywords    = ["image", "upload", "cli"]
 
 [[bin]]
