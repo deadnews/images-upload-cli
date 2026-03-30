@@ -107,17 +107,17 @@ jobs:
         shell: bash
         run: sed "s|^version.*|version = '${GITHUB_REF_NAME#v}'|" Cargo.toml > t && mv t Cargo.toml
 
-      - uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
+      - uses: pyo3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
         with:
           command: build
-          args: --release --out dist
+          args: --release --compatibility pypi
           target: ${{ matrix.target }}
           manylinux: 2_28
 
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: wheel-${{ matrix.os }}-${{ matrix.target }}
-          path: dist/
+          path: target/wheels/
           retention-days: 1
 
   pypi-deploy:

@@ -21,7 +21,8 @@ uv tool install images-upload-cli
 yay -S images-upload-cli-bin
 ```
 
-> **Note:** Run with: `imgup`.
+> [!NOTE]
+> Run with: `imgup`.
 
 ## Hostings
 
