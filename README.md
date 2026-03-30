@@ -22,7 +22,7 @@ yay -S images-upload-cli-bin
 ```
 
 > [!NOTE]
-> Run with: `imgup`.
+> Run with `imgup`.
 
 ## Hostings
 
