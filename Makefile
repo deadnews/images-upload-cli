@@ -1,4 +1,4 @@
-.PHONY: all clean default install lock update up check pc test docs run
+.PHONY: all clean default run build update up check lint pc test release
 
 default: check
 
@@ -6,33 +6,25 @@ check: pc lint test
 pc:
 	prek run -a
 lint:
-	uv run ruff check .
-	uv run ruff format .
-	uv run ty check .
+	cargo fmt --all
+	cargo clippy --fix --allow-dirty --all-targets -- -D warnings
+lint-ci:
+	cargo fmt --all --check
+	cargo clippy --all-targets -- -D warnings
 test:
-	uv run pytest -m 'not online'
-
-install:
-	uv sync
+	cargo llvm-cov nextest
+test-ci: test
+	cargo llvm-cov report --lcov --output-path lcov.info
 
 update: up up-ci
 up:
-	uv sync --upgrade
+	cargo update --recursive --verbose
 up-ci:
-	prek auto-update
-	pinact run -update
+	prek auto-update --freeze
+	pinact run --update
 
-doc:
-	uv run mkdocs serve
-
-# make nuitka OUTPUT_FILE=images-upload-cli.exe
-nuitka:
-	uv run nuitka \
-	  --assume-yes-for-downloads \
-	  --onefile \
-	  --output-dir=dist \
-	  --output-file=$(OUTPUT_FILE) \
-	  --script-name=src/images_upload_cli/__main__.py
+build:
+	cargo build
 
 bumped:
 	git cliff --bumped-version

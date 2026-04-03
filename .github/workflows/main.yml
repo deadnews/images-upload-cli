@@ -11,100 +11,135 @@ permissions:
   contents: read
 
 jobs:
+  prek:
+    name: Prek
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run prek
+        uses: j178/prek-action@53276d8b0d10f8b6672aa85b4588c6921d0370cc # v2.0.1
+
   lint:
     name: Lint code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098 # v7.3.1
-        with:
-          enable-cache: true
-
-      - name: Install project
-        run: uv sync --frozen
+      - name: Rust Cache
+        uses: swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
 
       - name: Lint code
-        run: make lint
+        run: make lint-ci
 
   test:
-    name: Tests
+    name: Test
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098 # v7.3.1
-        with:
-          enable-cache: true
-          python-version: ${{ matrix.python-version }}
+      - name: Rust Cache
+        uses: swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
 
-      - name: Install project
-        run: uv sync --frozen
+      - uses: taiki-e/install-action@d858f8113943481093e02986a7586a4819a3bfd6 # v2.71.2
+        with:
+          tool: nextest,cargo-llvm-cov
 
       - name: Run tests
-        run: make test
+        run: make test-ci
 
-      - name: Upload coverage to Codecov
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.14'
-        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+      - name: Upload coverage
+        uses: deadnews/coverage-badge-action@bc4aaf332f25c52d1e8dd21ef9ed0b2337ad39af # v1.0.0
+        if: github.event_name == 'push' && matrix.os == 'ubuntu-latest'
+        with:
+          file: lcov.info
+          type: lcov
+
+  cargo-deploy:
+    name: Release to crates.io
+    if: github.ref_type == 'tag'
+    needs: [lint, test]
+    environment: crates.io
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Authenticate to crates.io
+        uses: rust-lang/crates-io-auth-action@bbd81622f20ce9e2dd9622e3218b975523e45bbe # v1.0.4
+        id: auth
+
+      - name: Set version in Cargo.toml
+        run: sed "s|^version.*=.*$|version = '${GITHUB_REF_NAME#v}'|" -i Cargo.toml
+
+      - name: Sync Cargo.lock version
+        run: cargo generate-lockfile
+
+      - name: Publishing on crates.io
+        run: cargo publish --locked --allow-dirty
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+
+  pypi-build:
+    name: Build wheel
+    if: github.ref_type == 'tag'
+    needs: [lint, test]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, target: x86_64, manylinux: 2_28 }
+          - { os: ubuntu-latest, target: aarch64, manylinux: 2_28 }
+          - { os: ubuntu-latest, target: x86_64, manylinux: musllinux_1_2 }
+          - { os: ubuntu-latest, target: aarch64, manylinux: musllinux_1_2 }
+          - { os: macos-latest, target: aarch64 }
+          - { os: windows-latest, target: x86_64 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set version
+        shell: bash
+        run: sed "s|^version.*|version = '${GITHUB_REF_NAME#v}'|" Cargo.toml > t && mv t Cargo.toml
+
+      - name: Build wheel
+        uses: pyo3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
+        with:
+          command: build
+          args: --release --compatibility pypi
+          target: ${{ matrix.target }}
+          manylinux: ${{ matrix.manylinux || '' }}
+
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: wheel-${{ matrix.os }}-${{ matrix.target }}-${{ matrix.manylinux || 'native' }}
+          path: target/wheels/
 
   pypi-deploy:
     name: Release to PyPI
     if: github.ref_type == 'tag'
-    needs: [lint, test]
+    needs: [pypi-build]
     environment: pypi
+    runs-on: ubuntu-latest
     permissions:
       id-token: write
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098 # v7.3.1
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          enable-cache: true
+          pattern: wheel-*
+          merge-multiple: true
+          path: dist/
 
-      - name: Build package
-        run: uv build
-
-      - name: Publish package to PyPI
-        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
-
-  aur-deploy:
-    name: Release to AUR
-    if: true && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta')
-    needs: [pypi-deploy]
-    environment:
-      name: aur
-      url: https://aur.archlinux.org/packages/python-images-upload-cli
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Wait for PyPI update
-        run: sleep 10
-
-      - name: Update version in PKGBUILD
-        run: |
-          sed "s|^pkgver=.*$|pkgver=\"${GITHUB_REF_NAME#v}\"|" -i PKGBUILD
-
-      - name: Deploy PKGBUILD to the Arch User Repository
-        uses: ksxgithub/github-actions-deploy-aur@2ac5a4c1d7035885d46b10e3193393be8460b6f1 # v4.1.1
+      - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
         with:
-          pkgname: python-images-upload-cli
-          pkgbuild: ./PKGBUILD
-          commit_username: deadnews
-          commit_email: deadnewsgit@gmail.com
-          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: Upstream release ${{ github.ref_name }}
-          updpkgsums: true
+          packages-dir: dist
 
   github-deploy:
     name: Release to GitHub
@@ -115,99 +150,79 @@ jobs:
       contents: write
     env:
       CHANGELOG: https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md
-      PRERELEASE: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+      PRERELEASE: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Create GitHub Release
         run: |
-          gh release create ${GITHUB_REF_NAME} \
-            --title ${GITHUB_REF_NAME} \
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "${GITHUB_REF_NAME}" \
             --notes="See [the CHANGELOG](${CHANGELOG}) for more details." \
-            --draft=${PRERELEASE} \
-            --prerelease=${PRERELEASE}
+            --draft="${PRERELEASE}" \
+            --prerelease="${PRERELEASE}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-win:
-    name: Windows Build
+  github-build:
+    name: Build binary (${{ matrix.target }})
     if: github.ref_type == 'tag'
     needs: [github-deploy]
-    environment: github-releases
     permissions:
       contents: write
-    env:
-      ASSET: ${{ github.event.repository.name }}_${{ github.ref_name }}_windows_amd64.zip
-      BINARY: ${{ github.event.repository.name }}.exe
-      NUITKA_CACHE_DIR: /cache/nuitka
-      PYTHON_VERSION: "3.14"
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-musl }
+          - { os: ubuntu-latest, target: aarch64-unknown-linux-gnu }
+          - { os: ubuntu-latest, target: aarch64-unknown-linux-musl }
+          - { os: macos-latest, target: aarch64-apple-darwin }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc }
+          - { os: windows-latest, target: aarch64-pc-windows-msvc }
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098 # v7.3.1
+      - name: Set version
+        shell: bash
+        run: sed "s|^version.*|version = '${GITHUB_REF_NAME#v}'|" Cargo.toml > t && mv t Cargo.toml
+
+      - name: Build and upload binary
+        uses: taiki-e/upload-rust-binary-action@0e34102c043ded9f2ca39f7af5cd99a540c61aff # v1.29.1
         with:
-          enable-cache: true
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install project
-        run: uv sync --frozen
-
-      - name: Cache nuitka
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
-        with:
-          key: ${{ runner.os }}-nuitka
-          path: ${{ env.NUITKA_CACHE_DIR }}
-
-      - name: Build binaries
-        run: make nuitka OUTPUT_FILE=${env:BINARY}
-
-      - name: Archive binaries
-        run: uv run python -m zipfile --create "${env:ASSET}" "dist/${env:BINARY}"
-
-      - name: Upload binaries to Release
-        run: gh release upload "${env:GITHUB_REF_NAME}" "${env:ASSET}"
+          bin: imgup
+          target: ${{ matrix.target }}
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  docs-build:
-    name: Build docs
-    if: github.ref_type == 'tag'
-    needs: [lint, test]
+  aur-deploy:
+    name: Release to AUR
+    if: true && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta')
+    needs: [github-build]
+    environment:
+      name: aur
+      url: https://aur.archlinux.org/packages/${{ github.event.repository.name }}-bin
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098 # v7.3.1
+      - name: Update version in PKGBUILD
+        run: |
+          pkgver="${GITHUB_REF_NAME#v}"
+          pkgver="${pkgver//-/_}"
+          sed "s|^pkgver=.*$|pkgver=\"${pkgver}\"|" -i PKGBUILD
+
+      - name: Deploy PKGBUILD to the AUR
+        uses: ksxgithub/github-actions-deploy-aur@2ac5a4c1d7035885d46b10e3193393be8460b6f1 # v4.1.1
         with:
-          enable-cache: true
-
-      - name: Build docs
-        run: uv run --frozen mkdocs build
-
-      - name: Setup Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
-        with:
-          path: site
-
-  docs-deploy:
-    name: Deploy docs
-    if: true && !contains(github.ref, 'alpha')
-    needs: [docs-build]
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    permissions:
-      id-token: write
-      pages: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+          pkgname: ${{ github.event.repository.name }}-bin
+          pkgbuild: ./PKGBUILD
+          commit_username: ${{ github.actor }}
+          commit_email: ${{ github.actor }}@users.noreply.github.com
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Upstream release ${{ github.ref_name }}
+          updpkgsums: true
+          test: true

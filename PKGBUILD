@@ -1,33 +1,23 @@
 # Maintainer: deadnews <deadnewsgit@gmail.com>
 
-pkgbase="python-images-upload-cli"
-pkgname=("python-images-upload-cli")
-_name="images_upload_cli"
-pkgver="dynamically updated by ci/cd"
+name="imgup"
+pkgname="${name}-bin"
+pkgver="0.0.0"
 pkgrel=1
 pkgdesc="Upload images via APIs"
-url="https://github.com/deadnews/images-upload-cli"
-depends=(
-    "python"
-    "python-click"
-    "python-dotenv"
-    "python-httpx"
-    "python-loguru"
-    "python-pillow"
-    "python-pyperclip"
-    "python-rich"
-)
-makedepends=(
-    "python-installer"
-)
-optdepends=(
-    "libnotify: sending desktop notifications"
-)
+arch=("x86_64" "aarch64")
+url="https://github.com/deadnews/imgup"
 license=("MIT")
-arch=("any")
-source=("https://files.pythonhosted.org/packages/py3/${_name::1}/${_name}/${_name}-$pkgver-py3-none-any.whl")
-sha256sums=("dynamically updated by ci/cd")
+provides=("${name}")
+conflicts=("${name}")
+options=("!strip")
+
+source_x86_64=("${name}-x86_64-unknown-linux-gnu.tar.gz::${url}/releases/download/v${pkgver//_/-}/${name}-x86_64-unknown-linux-gnu.tar.gz")
+source_aarch64=("${name}-aarch64-unknown-linux-gnu.tar.gz::${url}/releases/download/v${pkgver//_/-}/${name}-aarch64-unknown-linux-gnu.tar.gz")
+
+sha256sums_x86_64=("SKIP")
+sha256sums_aarch64=("SKIP")
 
 package() {
-    python -m installer --destdir="${pkgdir}" "${_name}-$pkgver-py3-none-any.whl"
+    install -Dm755 "${srcdir}/${name}" "${pkgdir}/usr/bin/${name}"
 }
