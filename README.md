@@ -4,7 +4,7 @@
 
 [![Rust: Crates.io](https://img.shields.io/badge/dynamic/json?url=https://crates.io/api/v1/crates/images-upload-cli&query=$.crate.max_stable_version&prefix=v&label=crates.io&logo=rust&logoColor=white&color=orange)](https://crates.io/crates/images-upload-cli)
 [![PyPI: Version](https://img.shields.io/pypi/v/images-upload-cli?logo=pypi&logoColor=white)](https://pypi.org/project/images-upload-cli)
-[![AUR: version](https://img.shields.io/aur/version/images-upload-cli-bin?logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/images-upload-cli-bin)
+[![AUR: version](https://img.shields.io/aur/version/imgup-bin?logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/imgup-bin)
 [![GitHub: Release](https://img.shields.io/github/v/release/deadnews/images-upload-cli?logo=github&logoColor=white)](https://github.com/deadnews/images-upload-cli/releases/latest)
 [![CI: Main](https://img.shields.io/github/actions/workflow/status/deadnews/images-upload-cli/main.yml?branch=main&logo=github&logoColor=white&label=main)](https://github.com/deadnews/images-upload-cli)
 [![CI: Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/deadnews/images-upload-cli/refs/heads/badges/coverage.json)](https://github.com/deadnews/images-upload-cli)
@@ -18,7 +18,7 @@
 uv tool install images-upload-cli
 
 # AUR
-yay -S images-upload-cli-bin
+yay -S imgup-bin
 ```
 
 > [!NOTE]

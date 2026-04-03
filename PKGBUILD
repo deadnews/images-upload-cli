@@ -1,23 +1,23 @@
 # Maintainer: deadnews <deadnewsgit@gmail.com>
 
-_pkgname="pindock"
-pkgname="${_pkgname}-bin"
+name="imgup"
+pkgname="${name}-bin"
 pkgver="0.0.0"
 pkgrel=1
-pkgdesc="Pin and update Docker image digests in Dockerfiles and compose files"
+pkgdesc="Upload images via APIs"
 arch=("x86_64" "aarch64")
-url="https://github.com/deadnews/pindock"
+url="https://github.com/deadnews/images-upload-cli"
 license=("MIT")
-provides=("pindock")
-conflicts=("pindock")
+provides=("${name}")
+conflicts=("${name}")
 options=("!strip")
 
-source_x86_64=("${_pkgname}_${pkgver//_/-}_linux_amd64.tar.gz::${url}/releases/download/v${pkgver//_/-}/${_pkgname}_${pkgver//_/-}_linux_amd64.tar.gz")
-source_aarch64=("${_pkgname}_${pkgver//_/-}_linux_arm64.tar.gz::${url}/releases/download/v${pkgver//_/-}/${_pkgname}_${pkgver//_/-}_linux_arm64.tar.gz")
+source_x86_64=("${name}-x86_64-unknown-linux-gnu.tar.gz::${url}/releases/download/v${pkgver//_/-}/${name}-x86_64-unknown-linux-gnu.tar.gz")
+source_aarch64=("${name}-aarch64-unknown-linux-gnu.tar.gz::${url}/releases/download/v${pkgver//_/-}/${name}-aarch64-unknown-linux-gnu.tar.gz")
 
 sha256sums_x86_64=("SKIP")
 sha256sums_aarch64=("SKIP")
 
 package() {
-    install -Dm755 "${srcdir}/${_pkgname}" "${pkgdir}/usr/bin/${_pkgname}"
+    install -Dm755 "${srcdir}/${name}" "${pkgdir}/usr/bin/${name}"
 }

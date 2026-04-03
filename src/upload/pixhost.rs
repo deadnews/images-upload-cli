@@ -77,7 +77,37 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn test_upload_success() {
+    async fn test_upload_extracts_direct_link() {
+        let mock_server = MockServer::start().await;
+
+        let show_url = format!("{}/show/865/361824612_upload.png", mock_server.uri());
+        let direct_url = "https://img865.pixhost.to/images/865/361824612_upload.png";
+
+        Mock::given(method("POST"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "name": "upload.png",
+                "show_url": show_url,
+                "th_url": "https://t865.pixhost.to/thumbs/865/361824612_upload.png"
+            })))
+            .mount(&mock_server)
+            .await;
+
+        Mock::given(method("GET"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_string(format!(r#"<img src="{direct_url}">"#)),
+            )
+            .mount(&mock_server)
+            .await;
+
+        let client = Client::new();
+        let url = upload(&client, vec![1, 2, 3], &mock_server.uri())
+            .await
+            .unwrap();
+        assert_eq!(url, direct_url);
+    }
+
+    #[tokio::test]
+    async fn test_upload_fallback_to_show_url() {
         let mock_server = MockServer::start().await;
 
         let show_url = format!("{}/show/865/361824612_upload.png", mock_server.uri());

@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Run prek
-        uses: j178/prek-action@79f765515bd648eb4d6bb1b17277b7cb22cb6468 # v2.0.0
+        uses: j178/prek-action@53276d8b0d10f8b6672aa85b4588c6921d0370cc # v2.0.1
 
   lint:
     name: Lint code
@@ -47,7 +47,7 @@ jobs:
       - name: Rust Cache
         uses: swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
 
-      - uses: taiki-e/install-action@e9e8e031bcd90cdbe8ac6bb1d376f8596e587fbf # v2.70.2
+      - uses: taiki-e/install-action@d858f8113943481093e02986a7586a4819a3bfd6 # v2.71.2
         with:
           tool: nextest,cargo-llvm-cov
 
@@ -200,11 +200,11 @@ jobs:
 
   aur-deploy:
     name: Release to AUR
-    if: true && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta')
+    # if: true && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta')
     needs: [github-deploy]
     environment:
       name: aur
-      url: https://aur.archlinux.org/packages/pindock-bin
+      url: https://aur.archlinux.org/packages/imgup-bin
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -220,8 +220,8 @@ jobs:
         with:
           pkgname: pindock-bin
           pkgbuild: ./PKGBUILD
-          commit_username: deadnews
-          commit_email: deadnewsgit@gmail.com
+          commit_username: ${{ github.actor }}
+          commit_email: ${{ github.actor }}@users.noreply.github.com
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: Upstream release ${{ github.ref_name }}
           updpkgsums: true
