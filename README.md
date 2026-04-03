@@ -49,8 +49,6 @@ yay -S imgup-bin
 ## Usage
 
 ```sh
-Upload images via APIs
-
 Usage: imgup [OPTIONS] <IMAGES>...
 
 Arguments:
@@ -94,7 +92,7 @@ VGY_KEY=
 ZPIC_KEY=
 ```
 
-You can set these in environment variables, or in `.env` file:
+These can be set as environment variables or in a `.env` file:
 
 - Unix: `~/.config/imgup/.env`
 - MacOS: `~/Library/Application Support/imgup/.env`
