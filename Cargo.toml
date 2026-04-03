@@ -1,15 +1,11 @@
 [package]
-name        = "images-upload-cli"
+name        = "imgup"
 description = "Upload images via APIs"
 version     = "0.0.0"
 edition     = "2024"
 license     = "MIT"
-repository  = "https://github.com/deadnews/images-upload-cli"
+repository  = "https://github.com/deadnews/imgup"
 keywords    = ["image", "upload", "cli"]
-
-[[bin]]
-name = "imgup"
-path = "src/main.rs"
 
 [dependencies]
 # CLI & config

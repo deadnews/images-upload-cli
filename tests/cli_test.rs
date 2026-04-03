@@ -20,7 +20,7 @@ fn test_version() {
     let output = imgup().arg("--version").output().expect("failed to run");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("images-upload-cli"));
+    assert!(stdout.contains("imgup"));
 }
 
 #[test]

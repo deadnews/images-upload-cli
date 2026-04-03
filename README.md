@@ -1,13 +1,13 @@
-# images-upload-cli
+# imgup
 
 > Upload images via APIs
 
-[![Rust: Crates.io](https://img.shields.io/badge/dynamic/json?url=https://crates.io/api/v1/crates/images-upload-cli&query=$.crate.max_stable_version&prefix=v&label=crates.io&logo=rust&logoColor=white&color=orange)](https://crates.io/crates/images-upload-cli)
+[![Rust: Crates.io](https://img.shields.io/badge/dynamic/json?url=https://crates.io/api/v1/crates/imgup&query=$.crate.max_stable_version&prefix=v&label=crates.io&logo=rust&logoColor=white&color=orange)](https://crates.io/crates/imgup)
 [![PyPI: Version](https://img.shields.io/pypi/v/images-upload-cli?logo=pypi&logoColor=white)](https://pypi.org/project/images-upload-cli)
 [![AUR: version](https://img.shields.io/aur/version/imgup-bin?logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/imgup-bin)
-[![GitHub: Release](https://img.shields.io/github/v/release/deadnews/images-upload-cli?logo=github&logoColor=white)](https://github.com/deadnews/images-upload-cli/releases/latest)
-[![CI: Main](https://img.shields.io/github/actions/workflow/status/deadnews/images-upload-cli/main.yml?branch=main&logo=github&logoColor=white&label=main)](https://github.com/deadnews/images-upload-cli)
-[![CI: Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/deadnews/images-upload-cli/refs/heads/badges/coverage.json)](https://github.com/deadnews/images-upload-cli)
+[![GitHub: Release](https://img.shields.io/github/v/release/deadnews/imgup?logo=github&logoColor=white)](https://github.com/deadnews/imgup/releases/latest)
+[![CI: Main](https://img.shields.io/github/actions/workflow/status/deadnews/imgup/main.yml?branch=main&logo=github&logoColor=white&label=main)](https://github.com/deadnews/imgup)
+[![CI: Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/deadnews/imgup/refs/heads/badges/coverage.json)](https://github.com/deadnews/imgup)
 
 **[Installation](#installation)** • **[Hostings](#hostings)** • **[Usage](#usage)** • **[Env Variables](#env-variables)**
 
@@ -20,9 +20,6 @@ uv tool install images-upload-cli
 # AUR
 yay -S imgup-bin
 ```
-
-> [!NOTE]
-> Run with `imgup`.
 
 ## Hostings
 
@@ -100,6 +97,6 @@ ZPIC_KEY=
 
 You can set these in environment variables, or in `.env` file:
 
-- Unix: `~/.config/images-upload-cli/.env`
-- MacOS: `~/Library/Application Support/images-upload-cli/.env`
-- Windows: `C:\Users\<user>\AppData\Roaming\images-upload-cli\.env`
+- Unix: `~/.config/imgup/.env`
+- MacOS: `~/Library/Application Support/imgup/.env`
+- Windows: `C:\Users\<user>\AppData\Roaming\imgup\.env`

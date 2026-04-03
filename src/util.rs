@@ -5,7 +5,7 @@ use tracing::warn;
 
 /// Get the default config path.
 pub fn get_config_path() -> Option<PathBuf> {
-    dirs::config_dir().map(|d| d.join("images-upload-cli/.env"))
+    dirs::config_dir().map(|d| d.join("imgup/.env"))
 }
 
 /// Get a required environment variable, with a helpful error message.
@@ -44,7 +44,7 @@ pub fn clipboard_copy(text: &str) {
 /// Send a desktop notification.
 pub fn notify_send(text: &str) {
     if let Err(e) = notify_rust::Notification::new()
-        .appname("images-upload-cli")
+        .appname("imgup")
         .summary("Upload complete")
         .body(text)
         .show()
@@ -97,7 +97,7 @@ mod tests {
     fn test_config_path_structure() {
         if let Some(path) = get_config_path() {
             let path_str = path.to_string_lossy();
-            assert!(path_str.contains("images-upload-cli"));
+            assert!(path_str.contains("imgup"));
             assert!(path_str.ends_with(".env"));
         }
     }

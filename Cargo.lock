@@ -1195,7 +1195,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "images-upload-cli"
+name = "imgup"
 version = "0.0.0"
 dependencies = [
  "anyhow",

@@ -39,7 +39,7 @@ commit_parsers = [
 ]
 
 [changelog]
-postprocessors = [{ pattern = '<REPO>', replace = "https://github.com/deadnews/images-upload-cli" }]
+postprocessors = [{ pattern = '<REPO>', replace = "https://github.com/deadnews/imgup" }]
 header = """
 # Changelog\n
 """
