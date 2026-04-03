@@ -31,7 +31,6 @@ yay -S imgup-bin
 | [freeimage](https://freeimage.host/)  |      +       | `https://iili.io/{id}.png`                           |
 | [gyazo](https://gyazo.com/)           |      +       | `https://i.gyazo.com/{id}.png`                       |
 | [imageban](https://imageban.ru/)      |      +       | `https://i2.imageban.ru/out/2022/07/30/{id}.png`     |
-| [imagebin](https://imagebin.ca/)      |      -       | `https://ibin.co/{id}.png`                           |
 | [imgbb](https://imgbb.com/)           |      +       | `https://i.ibb.co/{id}/image.png`                    |
 | [imgchest](https://imgchest.com/)     |      +       | `https://cdn.imgchest.com/files/{id}.png`            |
 | [imgur](https://imgur.com/)           |      -       | `https://i.imgur.com/{id}.png`                       |
@@ -45,7 +44,7 @@ yay -S imgup-bin
 | [uplio](https://upl.io/)              |      +       | `https://upl.io/i/{id}.png`                          |
 | [uploadcare](https://uploadcare.com/) |      +       | `https://ucarecdn.com/{id}/img.png`                  |
 | [vgy](https://vgy.me/)                |      +       | `https://i.vgy.me/{id}.png`                          |
-| [zpic](https://zpic.io/)              |      +       | `https://zpi.cx/b/{id}.png`                          |
+| [zpic](https://zpic.biz/)             |      +       | `https://zpi.cx/b/{id}.png`                          |
 
 ## Usage
 
@@ -59,10 +58,10 @@ Arguments:
 
 Options:
   -H, --hosting <HOSTING>          Hosting service to use [default: imgur]
-                                   [possible values: beeimg, catbox, fastpic, freeimage, gyazo,
-                                   imageban, imagebin, imgbb, imgchest, imgur, lensdump,
-                                   pixeldrain, pixhost, ptpimg, sxcu, thumbsnap, tixte, uplio,
-                                   uploadcare, vgy, zpic]
+                                   [possible values: beeimg, catbox, fastpic, freeimage,
+                                   gyazo, imageban, imgbb, imgchest, imgur, lensdump,
+                                   pixeldrain, pixhost, ptpimg, sxcu, thumbsnap, tixte,
+                                   uplio, uploadcare, vgy, zpic]
   -f, --format <FORMAT>            Output format for the links [default: plain]
                                    [possible values: plain, bbcode, html, markdown]
   -t, --thumbnail                  Create captioned thumbnails

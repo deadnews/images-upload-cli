@@ -5,7 +5,7 @@ use serde::Deserialize;
 
 use super::parse_json;
 
-pub const API_URL: &str = "https://zpic.io/api/1/upload";
+pub const API_URL: &str = "https://zpic.biz/api/1/upload";
 
 #[derive(Deserialize)]
 struct Response {
@@ -17,7 +17,7 @@ struct Image {
     url: String,
 }
 
-/// Upload image bytes to zpic.io.
+/// Upload image bytes to zpic.biz.
 ///
 /// Requires API key.
 pub async fn upload(client: &Client, data: Vec<u8>, url: &str, key: &str) -> Result<String> {

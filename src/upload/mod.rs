@@ -4,7 +4,6 @@ mod fastpic;
 mod freeimage;
 mod gyazo;
 mod imageban;
-mod imagebin;
 mod imgbb;
 mod imgchest;
 mod imgur;
@@ -62,7 +61,6 @@ pub enum Hosting {
     Freeimage,
     Gyazo,
     Imageban,
-    Imagebin,
     Imgbb,
     Imgchest,
     Imgur,
@@ -95,7 +93,6 @@ pub async fn upload(client: &Client, hosting: Hosting, data: Vec<u8>) -> Result<
         Hosting::Beeimg => beeimg::upload(client, data, beeimg::API_URL).await,
         Hosting::Catbox => catbox::upload(client, data, catbox::API_URL).await,
         Hosting::Fastpic => fastpic::upload(client, data, fastpic::API_URL).await,
-        Hosting::Imagebin => imagebin::upload(client, data, imagebin::API_URL).await,
         Hosting::Pixhost => pixhost::upload(client, data, pixhost::API_URL).await,
         Hosting::Sxcu => sxcu::upload(client, data, sxcu::API_URL).await,
         Hosting::Freeimage => {
