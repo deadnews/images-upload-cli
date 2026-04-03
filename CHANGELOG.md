@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.0.0-alpha.5](https://github.com/deadnews/imgup/compare/v3.0.6...v4.0.0-alpha.5) - 2026-04-03
+## [4.0.0-alpha.6](https://github.com/deadnews/imgup/compare/v3.0.6...v4.0.0-alpha.6) - 2026-04-03
 
 ### Features
 

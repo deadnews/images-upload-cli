@@ -4,4 +4,4 @@ build-backend = "maturin"
 
 [project]
 name    = "images-upload-cli"
-dynamic = ["version"]
+dynamic = ["version", "description", "readme", "license", "keywords", "urls"]

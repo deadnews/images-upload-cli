@@ -200,8 +200,8 @@ jobs:
 
   aur-deploy:
     name: Release to AUR
-    # if: true && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta')
-    needs: [github-deploy]
+    if: true && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta')
+    needs: [github-build]
     environment:
       name: aur
       url: https://aur.archlinux.org/packages/${{ github.event.repository.name }}-bin
