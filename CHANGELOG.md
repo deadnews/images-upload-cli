@@ -1,15 +1,10 @@
 # Changelog
 
-## [4.0.0-alpha.6](https://github.com/deadnews/imgup/compare/v3.0.6...v4.0.0-alpha.6) - 2026-04-03
+## [4.0.0](https://github.com/deadnews/imgup/compare/v3.0.6...v4.0.0) - 2026-04-03
 
 ### Features
 
-- rewrite in rust - ([c393b90](https://github.com/deadnews/imgup/commit/c393b90b0f6731184e19f4fef3689a670f942a5a))
-
-### Refactor
-
-- _(project)_ rename project to `imgup` - ([13fb2b0](https://github.com/deadnews/imgup/commit/13fb2b08f635d5d8f0a4647e0a33745e8733d805))
-- _(upload)_ remove imagebin hosting - ([ac96703](https://github.com/deadnews/imgup/commit/ac96703332f1785fedcadf9d1f77dcfe33870fc7))
+- rewrite in rust ([#326](https://github.com/deadnews/imgup/issues/326)) - ([1a5b152](https://github.com/deadnews/imgup/commit/1a5b15208a057129eb9221995951121a94b755d7))
 
 ### Chores
 
@@ -17,10 +12,6 @@
 - _(prek)_ add `zizmor` hook ([#315](https://github.com/deadnews/imgup/issues/315)) - ([e33cdcb](https://github.com/deadnews/imgup/commit/e33cdcb50336f1eedd8e936b4911143ea1ae5973))
 - _(vscode)_ update inlay hints setting for python - ([c74ece2](https://github.com/deadnews/imgup/commit/c74ece2254b93f2a17238f4eb61d602e28b731ca))
 - replace `mypy` and `pyright` with `ty` - ([b662e75](https://github.com/deadnews/imgup/commit/b662e756cf00694feb43de758be5710fb3f403ed))
-
-### Dependencies
-
-- update deps - ([da89f61](https://github.com/deadnews/imgup/commit/da89f6174fc5af381a9872f4ba91329fd783a4e1))
 
 ## [3.0.6](https://github.com/deadnews/imgup/compare/v3.0.5...v3.0.6) - 2025-07-06
 
