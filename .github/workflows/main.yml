@@ -47,7 +47,7 @@ jobs:
       - name: Rust Cache
         uses: swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
 
-      - uses: taiki-e/install-action@d858f8113943481093e02986a7586a4819a3bfd6 # v2.71.2
+      - uses: taiki-e/install-action@1ed3272338f573e042a2e6bca3893aa19f43b47a # v2.71.3
         with:
           tool: nextest,cargo-llvm-cov
 
@@ -216,7 +216,7 @@ jobs:
           sed "s|^pkgver=.*$|pkgver=\"${pkgver}\"|" -i PKGBUILD
 
       - name: Deploy PKGBUILD to the AUR
-        uses: ksxgithub/github-actions-deploy-aur@2ac5a4c1d7035885d46b10e3193393be8460b6f1 # v4.1.1
+        uses: ksxgithub/github-actions-deploy-aur@abe8ac26b51011c88be58c8809fd2ac674068ea5 # v4.1.2
         with:
           pkgname: ${{ github.event.repository.name }}-bin
           pkgbuild: ./PKGBUILD
