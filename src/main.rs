@@ -6,6 +6,7 @@ mod util;
 
 use std::path::Path;
 use std::process::ExitCode;
+use std::time::Duration;
 
 use anyhow::{Context, Result};
 use clap::Parser;
@@ -17,6 +18,9 @@ use tracing_subscriber::fmt;
 use crate::cli::Args;
 use crate::format::{Format, LinkPair, format_links};
 use crate::upload::Hosting;
+
+pub(crate) const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+pub(crate) const TIMEOUT: Duration = Duration::from_secs(120);
 
 #[tokio::main]
 async fn main() -> ExitCode {
@@ -83,12 +87,8 @@ async fn upload_single(
 
 async fn run(args: &Args) -> Result<ExitCode> {
     let client = reqwest::Client::builder()
-        .user_agent(concat!(
-            env!("CARGO_PKG_NAME"),
-            "/",
-            env!("CARGO_PKG_VERSION")
-        ))
-        .timeout(std::time::Duration::from_secs(120))
+        .user_agent(USER_AGENT)
+        .timeout(TIMEOUT)
         .build()
         .context("failed to build HTTP client")?;
 
@@ -106,7 +106,7 @@ async fn run(args: &Args) -> Result<ExitCode> {
 
     if !links.is_empty() {
         // Thumbnail mode defaults to bbcode
-        let fmt = if args.thumbnail && matches!(args.format, Format::Plain) {
+        let fmt = if args.thumbnail && args.format == Format::Plain {
             Format::Bbcode
         } else {
             args.format
