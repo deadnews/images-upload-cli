@@ -3,7 +3,7 @@ use clap::ValueEnum;
 /// A pair of (image URL, optional thumbnail URL).
 pub type LinkPair = (String, Option<String>);
 
-#[derive(Clone, Copy, Debug, ValueEnum)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]
 pub enum Format {
     Plain,
     Bbcode,
