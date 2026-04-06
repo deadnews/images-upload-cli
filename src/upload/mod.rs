@@ -1,6 +1,5 @@
 mod beeimg;
 mod catbox;
-mod dropbox;
 mod fastpic;
 mod freeimage;
 mod gyazo;
@@ -57,7 +56,6 @@ pub(crate) async fn response_text(resp: reqwest::Response, provider: &str) -> Re
 pub enum Hosting {
     Beeimg,
     Catbox,
-    Dropbox,
     Fastpic,
     Freeimage,
     Gyazo,
@@ -95,10 +93,6 @@ pub async fn upload(client: &Client, hosting: Hosting, data: Vec<u8>) -> Result<
     let url = match hosting {
         Hosting::Beeimg => beeimg::upload(client, data, beeimg::API_URL).await,
         Hosting::Catbox => catbox::upload(client, data, catbox::API_URL).await,
-        Hosting::Dropbox => {
-            let token = get_env("DROPBOX_TOKEN")?;
-            dropbox::upload(client, data, dropbox::CONTENT_URL, dropbox::API_URL, &token).await
-        }
         Hosting::Fastpic => fastpic::upload(client, data, fastpic::API_URL).await,
         Hosting::Pixhost => pixhost::upload(client, data, pixhost::API_URL).await,
         Hosting::Sxcu => sxcu::upload(client, data, sxcu::API_URL).await,
