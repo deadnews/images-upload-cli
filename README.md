@@ -30,6 +30,7 @@ yay -S imgup-bin
 | [cloudinary](https://cloudinary.com/) |      +       | `https://res.cloudinary.com/{cloud}/image/upload/{id}.png` |
 | [fastpic](https://fastpic.org/)       |      -       | `https://i120.fastpic.org/big/2022/0730/d9/{id}.png`       |
 | [freeimage](https://freeimage.host/)  |      +       | `https://iili.io/{id}.png`                                 |
+| [gofile](https://gofile.io/)          |      -       | `https://gofile.io/d/{id}`                                 |
 | [gyazo](https://gyazo.com/)           |      +       | `https://i.gyazo.com/{id}.png`                             |
 | [imageban](https://imageban.ru/)      |      +       | `https://i2.imageban.ru/out/2022/07/30/{id}.png`           |
 | [imagekit](https://imagekit.io/)      |      +       | `https://ik.imagekit.io/{id}/img_{id}.png`                 |

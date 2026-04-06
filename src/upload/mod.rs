@@ -3,6 +3,7 @@ mod catbox;
 mod cloudinary;
 mod fastpic;
 mod freeimage;
+mod gofile;
 mod gyazo;
 mod imageban;
 mod imagekit;
@@ -62,6 +63,7 @@ pub enum Hosting {
     Cloudinary,
     Fastpic,
     Freeimage,
+    Gofile,
     Gyazo,
     Imageban,
     Imagekit,
@@ -113,6 +115,7 @@ pub async fn upload(client: &Client, hosting: Hosting, data: Vec<u8>) -> Result<
             let key = get_env("FREEIMAGE_KEY")?;
             freeimage::upload(client, data, freeimage::API_URL, &key).await
         }
+        Hosting::Gofile => gofile::upload(client, data, gofile::API_URL).await,
         Hosting::Gyazo => {
             let token = get_env("GYAZO_TOKEN")?;
             gyazo::upload(client, data, gyazo::API_URL, &token).await
