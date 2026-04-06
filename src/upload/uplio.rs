@@ -29,12 +29,13 @@ pub async fn upload(client: &Client, data: Vec<u8>, url: &str, key: &str) -> Res
 
     let text = response_text(resp, "uplio").await?;
 
-    // Convert "https://upl.io/UID.ext" to "https://upl.io/i/UID.ext"
+    // Convert "https://upl.io/UID[.ext]" to "https://upl.io/i/UID.ext"
     let Some((host, uid)) = text.rsplit_once('/') else {
         debug!("Response text:\n{text}");
         anyhow::bail!("unexpected uplio response format");
     };
-    Ok(format!("{host}/i/{uid}"))
+    let uid_base = uid.rsplit_once('.').map_or(uid, |(base, _)| base);
+    Ok(format!("{host}/i/{uid_base}.{ext_str}"))
 }
 
 #[cfg(test)]
@@ -50,7 +51,7 @@ mod tests {
         let mock_server = MockServer::start().await;
 
         Mock::given(method("POST"))
-            .respond_with(ResponseTemplate::new(200).set_body_string("https://upl.io/0w25y7.png"))
+            .respond_with(ResponseTemplate::new(200).set_body_string("https://upl.io/0w25y7"))
             .mount(&mock_server)
             .await;
 
