@@ -1,6 +1,6 @@
 .PHONY: test run
 
-HOSTINGS := beeimg catbox fastpic freeimage gyazo imageban imgbb imgchest imgur lensdump pixeldrain pixhost ptpimg sxcu thumbsnap tixte uplio uploadcare vgy zpic
+HOSTINGS := beeimg catbox fastpic freeimage gyazo imageban imgbb imgbox imgchest imgur lensdump pixeldrain pixhost postimages ptpimg sxcu thumbsnap tixte uplio uploadcare vgy zpic
 TEST_IMG := tests/fixtures/image.png
 
 run:

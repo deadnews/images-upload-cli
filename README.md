@@ -32,11 +32,13 @@ yay -S imgup-bin
 | [gyazo](https://gyazo.com/)           |      +       | `https://i.gyazo.com/{id}.png`                       |
 | [imageban](https://imageban.ru/)      |      +       | `https://i2.imageban.ru/out/2022/07/30/{id}.png`     |
 | [imgbb](https://imgbb.com/)           |      +       | `https://i.ibb.co/{id}/image.png`                    |
+| [imgbox](https://imgbox.com/)         |      -       | `https://images2.imgbox.com/52/8c/{id}_o.png`        |
 | [imgchest](https://imgchest.com/)     |      +       | `https://cdn.imgchest.com/files/{id}.png`            |
 | [imgur](https://imgur.com/)           |      -       | `https://i.imgur.com/{id}.png`                       |
 | [lensdump](https://lensdump.com/)     |      +       | `https://i.lensdump.com/i/{id}.png`                  |
 | [pixeldrain](https://pixeldrain.com/) |      +       | `https://pixeldrain.com/api/file/{id}`               |
 | [pixhost](https://pixhost.to/)        |      -       | `https://img75.pixhost.to/images/69/{id}_img.png`    |
+| [postimages](https://postimages.org/) |      +       | `https://i.postimg.cc/{id}/img.png`                  |
 | [ptpimg](https://ptpimg.me/)          |      +       | `https://ptpimg.me/{id}.png`                         |
 | [sxcu](https://sxcu.net/)             |      -       | `https://sxcu.net/{id}.png`                          |
 | [thumbsnap](https://thumbsnap.com/)   |      +       | `https://thumbsnap.com/i/{id}.png`                   |
@@ -56,10 +58,7 @@ Arguments:
 
 Options:
   -H, --hosting <HOSTING>          Hosting service to use [default: imgur]
-                                   [possible values: beeimg, catbox, fastpic, freeimage,
-                                   gyazo, imageban, imgbb, imgchest, imgur, lensdump,
-                                   pixeldrain, pixhost, ptpimg, sxcu, thumbsnap, tixte,
-                                   uplio, uploadcare, vgy, zpic]
+                                   [possible values: <hostings list from above>]
   -f, --format <FORMAT>            Output format for the links [default: plain]
                                    [possible values: plain, bbcode, html, markdown]
   -t, --thumbnail                  Create captioned thumbnails
@@ -83,6 +82,7 @@ IMGCHEST_KEY=
 IMGUR_CLIENT_ID=
 LENSDUMP_KEY=
 PIXELDRAIN_KEY=
+POSTIMAGES_KEY=
 PTPIMG_KEY=
 THUMBSNAP_KEY=
 TIXTE_KEY=

@@ -5,11 +5,13 @@ mod freeimage;
 mod gyazo;
 mod imageban;
 mod imgbb;
+mod imgbox;
 mod imgchest;
 mod imgur;
 mod lensdump;
 mod pixeldrain;
 mod pixhost;
+mod postimages;
 mod ptpimg;
 mod sxcu;
 mod thumbsnap;
@@ -46,14 +48,11 @@ pub(crate) async fn response_text(resp: reqwest::Response, provider: &str) -> Re
         .await
         .with_context(|| format!("failed to read {provider} response"))?;
 
-    if !status.is_success() {
-        anyhow::bail!("{provider} returned {status}: {body}");
-    }
-
+    anyhow::ensure!(status.is_success(), "{provider} returned {status}: {body}");
     Ok(body)
 }
 
-#[derive(Clone, Copy, Debug, ValueEnum)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]
 pub enum Hosting {
     Beeimg,
     Catbox,
@@ -62,11 +61,13 @@ pub enum Hosting {
     Gyazo,
     Imageban,
     Imgbb,
+    Imgbox,
     Imgchest,
     Imgur,
     Lensdump,
     Pixeldrain,
     Pixhost,
+    Postimages,
     Ptpimg,
     Sxcu,
     Thumbsnap,
@@ -111,6 +112,7 @@ pub async fn upload(client: &Client, hosting: Hosting, data: Vec<u8>) -> Result<
             let key = get_env("IMGBB_KEY")?;
             imgbb::upload(client, data, imgbb::API_URL, &key).await
         }
+        Hosting::Imgbox => imgbox::upload(client, data, imgbox::API_URL).await,
         Hosting::Imgchest => {
             let key = get_env("IMGCHEST_KEY")?;
             imgchest::upload(client, data, imgchest::API_URL, &key).await
@@ -127,6 +129,10 @@ pub async fn upload(client: &Client, hosting: Hosting, data: Vec<u8>) -> Result<
         Hosting::Pixeldrain => {
             let key = get_env("PIXELDRAIN_KEY")?;
             pixeldrain::upload(client, data, pixeldrain::API_URL, &key).await
+        }
+        Hosting::Postimages => {
+            let key = get_env("POSTIMAGES_KEY")?;
+            postimages::upload(client, data, postimages::API_URL, &key).await
         }
         Hosting::Ptpimg => {
             let key = get_env("PTPIMG_KEY")?;
