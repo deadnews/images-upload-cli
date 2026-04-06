@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.0.2](https://github.com/deadnews/imgup/compare/v4.0.1...v4.0.2) - 2026-04-06
+
+### Features
+
+- add `cloudinary`, `gofile`, `imagekit`, `imghippo` ([#333](https://github.com/deadnews/imgup/issues/333)) - ([18aef66](https://github.com/deadnews/imgup/commit/18aef66a76ae74f28f7c80ea2bfa50d650eccbc1))
+
 ## [4.0.1](https://github.com/deadnews/imgup/compare/v4.0.0...v4.0.1) - 2026-04-06
 
 ### Features
