@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.0.1](https://github.com/deadnews/imgup/compare/v4.0.0...v4.0.1) - 2026-04-06
+
+### Features
+
+- add `imgbox`, `postimages` ([#332](https://github.com/deadnews/imgup/issues/332)) - ([5aa8b7c](https://github.com/deadnews/imgup/commit/5aa8b7c941d8a5ccda0161de019d267e5fb4616c))
+
 ## [4.0.0](https://github.com/deadnews/imgup/compare/v3.0.6...v4.0.0) - 2026-04-03
 
 ### Features
