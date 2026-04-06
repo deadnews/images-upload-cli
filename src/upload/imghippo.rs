@@ -1,41 +1,44 @@
 use anyhow::{Context, Result};
 use reqwest::Client;
 use reqwest::multipart::{Form, Part};
-use tracing::debug;
+use serde::Deserialize;
 
-use super::response_text;
+use super::parse_json;
 use crate::image::get_image_ext;
 
-pub const API_URL: &str = "https://upl.io";
+pub const API_URL: &str = "https://api.imghippo.com/v1/upload";
 
-/// Upload image bytes to upl.io.
+#[derive(Deserialize)]
+struct Response {
+    data: Data,
+}
+
+#[derive(Deserialize)]
+struct Data {
+    url: String,
+}
+
+/// Upload image bytes to imghippo.com.
 ///
 /// Requires API key.
 pub async fn upload(client: &Client, data: Vec<u8>, url: &str, key: &str) -> Result<String> {
     let ext = get_image_ext(&data)?;
     let ext_str = ext.extensions_str()[0];
-    let filename = format!("img.{ext_str}");
 
-    let form = Form::new()
-        .text("key", key.to_owned())
-        .part("file", Part::bytes(data).file_name(filename));
+    let form = Form::new().text("api_key", key.to_owned()).part(
+        "file",
+        Part::bytes(data).file_name(format!("img.{ext_str}")),
+    );
 
     let resp = client
         .post(url)
         .multipart(form)
         .send()
         .await
-        .context("failed to send request to uplio")?;
+        .context("failed to send request to imghippo")?;
 
-    let text = response_text(resp, "uplio").await?;
-
-    // Convert "https://upl.io/UID[.ext]" to "https://upl.io/i/UID.ext"
-    let Some((host, uid)) = text.rsplit_once('/') else {
-        debug!("Response text:\n{text}");
-        anyhow::bail!("unexpected uplio response format");
-    };
-    let uid_base = uid.rsplit_once('.').map_or(uid, |(base, _)| base);
-    Ok(format!("{host}/i/{uid_base}.{ext_str}"))
+    let resp: Response = parse_json(resp, "imghippo").await?;
+    Ok(resp.data.url)
 }
 
 #[cfg(test)]
@@ -51,7 +54,11 @@ mod tests {
         let mock_server = MockServer::start().await;
 
         Mock::given(method("POST"))
-            .respond_with(ResponseTemplate::new(200).set_body_string("https://upl.io/0w25y7"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "success": true,
+                "status": 200,
+                "data": {"url": "https://i.imghippo.com/files/abc123.png"}
+            })))
             .mount(&mock_server)
             .await;
 
@@ -61,6 +68,6 @@ mod tests {
         let url = upload(&client, png, &mock_server.uri(), "test_key")
             .await
             .unwrap();
-        assert_eq!(url, "https://upl.io/i/0w25y7.png");
+        assert_eq!(url, "https://i.imghippo.com/files/abc123.png");
     }
 }

@@ -1,12 +1,16 @@
 mod beeimg;
 mod catbox;
+mod cloudinary;
 mod fastpic;
 mod freeimage;
+mod gofile;
 mod gyazo;
 mod imageban;
+mod imagekit;
 mod imgbb;
 mod imgbox;
 mod imgchest;
+mod imghippo;
 mod imgur;
 mod lensdump;
 mod pixeldrain;
@@ -56,11 +60,15 @@ pub(crate) async fn response_text(resp: reqwest::Response, provider: &str) -> Re
 pub enum Hosting {
     Beeimg,
     Catbox,
+    Cloudinary,
     Fastpic,
     Freeimage,
+    Gofile,
     Gyazo,
     Imageban,
+    Imagekit,
     Imgbb,
+    Imghippo,
     Imgbox,
     Imgchest,
     Imgur,
@@ -96,10 +104,18 @@ pub async fn upload(client: &Client, hosting: Hosting, data: Vec<u8>) -> Result<
         Hosting::Fastpic => fastpic::upload(client, data, fastpic::API_URL).await,
         Hosting::Pixhost => pixhost::upload(client, data, pixhost::API_URL).await,
         Hosting::Sxcu => sxcu::upload(client, data, sxcu::API_URL).await,
+        Hosting::Cloudinary => {
+            let cloud_name = get_env("CLOUDINARY_CLOUD_NAME")?;
+            let api_key = get_env("CLOUDINARY_API_KEY")?;
+            let api_secret = get_env("CLOUDINARY_API_SECRET")?;
+            let url = format!("{}/{cloud_name}/image/upload", cloudinary::API_URL);
+            cloudinary::upload(client, data, &url, &api_key, &api_secret).await
+        }
         Hosting::Freeimage => {
             let key = get_env("FREEIMAGE_KEY")?;
             freeimage::upload(client, data, freeimage::API_URL, &key).await
         }
+        Hosting::Gofile => gofile::upload(client, data, gofile::API_URL).await,
         Hosting::Gyazo => {
             let token = get_env("GYAZO_TOKEN")?;
             gyazo::upload(client, data, gyazo::API_URL, &token).await
@@ -108,9 +124,17 @@ pub async fn upload(client: &Client, hosting: Hosting, data: Vec<u8>) -> Result<
             let token = get_env("IMAGEBAN_TOKEN")?;
             imageban::upload(client, data, imageban::API_URL, &token).await
         }
+        Hosting::Imagekit => {
+            let key = get_env("IMAGEKIT_PRIVATE_KEY")?;
+            imagekit::upload(client, data, imagekit::API_URL, &key).await
+        }
         Hosting::Imgbb => {
             let key = get_env("IMGBB_KEY")?;
             imgbb::upload(client, data, imgbb::API_URL, &key).await
+        }
+        Hosting::Imghippo => {
+            let key = get_env("IMGHIPPO_KEY")?;
+            imghippo::upload(client, data, imghippo::API_URL, &key).await
         }
         Hosting::Imgbox => imgbox::upload(client, data, imgbox::API_URL).await,
         Hosting::Imgchest => {
